@@ -61,7 +61,7 @@ flags.DEFINE_boolean('output_meta_ckpt', True,
                      'loaded in TensorFlow to continue training.')
 
 
-def load_model_car():
+def load_model():
     
     base_model = ResNet152( input_shape=(224,224,3), weights='imagenet', include_top=False)
     base_model.layers[0].name ='data_1'
@@ -72,15 +72,15 @@ def load_model_car():
 
     x_newfc = keras.layers.Dense(num_classes, activation='softmax', name='fc_new')(x_newfc)
 
-    model_car = keras.models.Model(input=base_model.input, output=x_newfc)
+    model = keras.models.Model(input=base_model.input, output=x_newfc)
     
     sgd = optimizers.SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     
-    model_car.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model_car.load_weights(model_weights_path, by_name=True)
+    model.load_weights(model_weights_path, by_name=True)
     
-    return model_car
+    return model
 
 
 
@@ -107,7 +107,7 @@ def main(args):
     else:
         K.set_image_data_format('channels_last')
 
-    model = load_model_car()
+    model = load_model()
     model.summary()
     orig_input_node_names = [node.op.name for node in model.inputs]
     
